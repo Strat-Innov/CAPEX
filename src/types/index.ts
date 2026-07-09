@@ -1,8 +1,9 @@
-export type UserRole = "pd_staff" | "pd_manager" | "finance_manager";
+export type UserRole = "pd_staff" | "pd_manager" | "finance_manager" | "developer";
 
 export interface Profile {
   id: string;
   full_name: string;
+  email: string | null;
   role: UserRole;
   created_at: string;
 }

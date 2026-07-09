@@ -116,3 +116,8 @@ export async function fetchNotifications(): Promise<NotificationLog[]> {
   if (error) throw new Error(`Failed to fetch notifications: ${error.message}`);
   return data as NotificationLog[];
 }
+
+export async function updateUserRole(userId: string, role: string): Promise<void> {
+  const { error } = await supabase.from("profiles").update({ role }).eq("id", userId);
+  if (error) throw new Error(`Failed to update role: ${error.message}`);
+}

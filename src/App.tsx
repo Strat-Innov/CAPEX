@@ -7,6 +7,7 @@ import { Dashboard } from "@/pages/Dashboard";
 import { Requests } from "@/pages/Requests";
 import { EntryDetail } from "@/pages/EntryDetail";
 import { NewEntry } from "@/pages/NewEntry";
+import { AccountManagement } from "@/pages/AccountManagement";
 
 function ProtectedRoutes() {
   const { session, profile, loading } = useAuth();
@@ -28,6 +29,7 @@ function ProtectedRoutes() {
         <Route path="/requests" element={<Requests />} />
         <Route path="/requests/:id" element={<EntryDetail />} />
         {profile.role === "pd_staff" && <Route path="/new-entry" element={<NewEntry />} />}
+        {profile.role === "developer" && <Route path="/account-management" element={<AccountManagement />} />}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
