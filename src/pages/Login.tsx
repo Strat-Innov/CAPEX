@@ -6,19 +6,28 @@ import { Button } from "@/components/ui/button";
 import { Building2 } from "lucide-react";
 
 export function Login() {
-  const { signIn, signUp } = useAuth();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const { signIn, signUp, requestPasswordReset } = useAuth();
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [signedUp, setSignedUp] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setLoading(true);
+
+    if (mode === "forgot") {
+      const result = await requestPasswordReset(email);
+      setLoading(false);
+      if (result.error) setError(result.error);
+      else setResetSent(true);
+      return;
+    }
 
     const result = mode === "signin" ? await signIn(email, password) : await signUp(email, password, fullName);
 
@@ -28,6 +37,13 @@ export function Login() {
     } else if (mode === "signup") {
       setSignedUp(true);
     }
+  }
+
+  function switchMode(next: "signin" | "signup" | "forgot") {
+    setMode(next);
+    setError(null);
+    setSignedUp(false);
+    setResetSent(false);
   }
 
   return (
@@ -43,13 +59,21 @@ export function Login() {
               <p className="text-[10px] uppercase tracking-widest text-muted-foreground">CAPEX Tracker</p>
             </div>
           </div>
-          <CardTitle>{mode === "signin" ? "Sign in" : "Create account"}</CardTitle>
+          <CardTitle>
+            {mode === "signin" ? "Sign in" : mode === "signup" ? "Create account" : "Reset password"}
+          </CardTitle>
           <CardDescription>
-            {mode === "signin" ? "Use your assigned CAPEX Tracker credentials." : "New accounts default to PD Staff — ask an admin to elevate your role."}
+            {mode === "signin" && "Use your assigned CAPEX Tracker credentials."}
+            {mode === "signup" && "New accounts default to PD Staff — ask an admin to elevate your role."}
+            {mode === "forgot" && "Enter your account email — we'll send a link to set a new password."}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {signedUp ? (
+          {mode === "forgot" && resetSent ? (
+            <p className="text-sm text-success">
+              If an account exists for that email, a reset link has been sent. Check your inbox (and spam).
+            </p>
+          ) : mode === "signup" && signedUp ? (
             <p className="text-sm text-success">
               Account created. Check your email to confirm, then sign in.
             </p>
@@ -70,31 +94,51 @@ export function Login() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
-              <Input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-              />
+              {mode !== "forgot" && (
+                <Input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={6}
+                />
+              )}
               {error && <p className="text-xs text-destructive">{error}</p>}
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Please wait..." : mode === "signin" ? "Sign in" : "Create account"}
+                {loading
+                  ? "Please wait..."
+                  : mode === "signin"
+                  ? "Sign in"
+                  : mode === "signup"
+                  ? "Create account"
+                  : "Send reset link"}
               </Button>
             </form>
           )}
 
-          <button
-            onClick={() => {
-              setMode(mode === "signin" ? "signup" : "signin");
-              setError(null);
-              setSignedUp(false);
-            }}
-            className="text-xs text-muted-foreground hover:text-primary mt-4 block"
-          >
-            {mode === "signin" ? "Need an account? Sign up" : "Already have an account? Sign in"}
-          </button>
+          <div className="mt-4 space-y-1.5">
+            {mode === "signin" && (
+              <>
+                <button onClick={() => switchMode("forgot")} className="text-xs text-muted-foreground hover:text-primary block">
+                  Forgot your password?
+                </button>
+                <button onClick={() => switchMode("signup")} className="text-xs text-muted-foreground hover:text-primary block">
+                  Need an account? Sign up
+                </button>
+              </>
+            )}
+            {mode === "signup" && (
+              <button onClick={() => switchMode("signin")} className="text-xs text-muted-foreground hover:text-primary block">
+                Already have an account? Sign in
+              </button>
+            )}
+            {mode === "forgot" && (
+              <button onClick={() => switchMode("signin")} className="text-xs text-muted-foreground hover:text-primary block">
+                Back to sign in
+              </button>
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>
