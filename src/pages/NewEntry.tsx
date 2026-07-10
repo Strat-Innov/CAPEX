@@ -5,6 +5,7 @@ import { createEntry } from "@/lib/capex";
 import { MONTH_FIELDS, STRATPLAN_FIELDS, PROJECT_NAMES } from "@/types";
 import type { NewOrCarryover, ProjectStage } from "@/types";
 import { formatCurrency } from "@/lib/format";
+import { validateCostSum } from "@/lib/validation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -53,14 +54,13 @@ export function NewEntry() {
 
     const monthValues = MONTH_FIELDS.map((m) => Number(months[m]) || 0);
     const stratplanValues = STRATPLAN_FIELDS.map((y) => Number(stratplan[y]) || 0);
-    const sumOfPeriods = [...monthValues, ...stratplanValues].reduce((s, v) => s + v, 0);
     const totalCost = Number(totalProjectCost) || 0;
 
-    // Compare in cents to avoid floating-point rounding false-positives.
-    if (Math.round(sumOfPeriods * 100) !== Math.round(totalCost * 100)) {
-      setError(
-        `Total Project Cost (${formatCurrency(totalCost)}) must equal the sum of FY27 Budget (Jan–Dec) and 5-Year Strat Plan (2028–2031), which currently adds up to ${formatCurrency(sumOfPeriods)}.`
-      );
+    const monthsRecord = Object.fromEntries(MONTH_FIELDS.map((m, i) => [m, monthValues[i]]));
+    const stratplanRecord = Object.fromEntries(STRATPLAN_FIELDS.map((y, i) => [y, stratplanValues[i]]));
+    const validationError = validateCostSum(totalCost, monthsRecord, stratplanRecord);
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
