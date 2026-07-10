@@ -31,7 +31,7 @@ function ProtectedRoutes() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/requests" element={<Requests />} />
         <Route path="/requests/:id" element={<EntryDetail />} />
-        {profile.role === "pd_staff" && <Route path="/new-entry" element={<NewEntry />} />}
+        {(profile.role === "pd_staff" || profile.role === "developer") && <Route path="/new-entry" element={<NewEntry />} />}
         {profile.role !== "pd_staff" && <Route path="/summary" element={<NewCarryoverSummary />} />}
         {profile.role !== "pd_staff" && <Route path="/summary/raw" element={<RawSummary />} />}
         {profile.role === "developer" && <Route path="/account-management" element={<AccountManagement />} />}
