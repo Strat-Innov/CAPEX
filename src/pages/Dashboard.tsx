@@ -45,6 +45,7 @@ export function Dashboard() {
   const actionable = entries.filter((e) => {
     if (profile?.role === "pd_manager") return e.status === "pending_pd_manager";
     if (profile?.role === "finance_manager") return e.status === "pending_finance_manager";
+    if (profile?.role === "developer") return e.status === "pending_pd_manager" || e.status === "pending_finance_manager";
     return false;
   });
 
@@ -97,7 +98,7 @@ export function Dashboard() {
         </div>
       </Card>
 
-      {(profile?.role === "pd_manager" || profile?.role === "finance_manager") && (
+      {(profile?.role === "pd_manager" || profile?.role === "finance_manager" || profile?.role === "developer") && (
         <div>
           <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">
             Awaiting Your Action

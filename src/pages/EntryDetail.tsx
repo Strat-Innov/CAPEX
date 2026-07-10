@@ -46,8 +46,10 @@ export function EntryDetail() {
   if (!entry) return <p className="text-sm text-muted-foreground">Loading...</p>;
   if (!session || !profile) return null;
 
-  const canActAsPdManager = profile.role === "pd_manager" && entry.status === "pending_pd_manager";
-  const canActAsFinance = profile.role === "finance_manager" && entry.status === "pending_finance_manager";
+  const canActAsPdManager =
+    (profile.role === "pd_manager" || profile.role === "developer") && entry.status === "pending_pd_manager";
+  const canActAsFinance =
+    (profile.role === "finance_manager" || profile.role === "developer") && entry.status === "pending_finance_manager";
 
   async function handleApprove() {
     if (!entry) return;
