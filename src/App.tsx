@@ -9,6 +9,8 @@ import { Requests } from "@/pages/Requests";
 import { EntryDetail } from "@/pages/EntryDetail";
 import { NewEntry } from "@/pages/NewEntry";
 import { AccountManagement } from "@/pages/AccountManagement";
+import { NewCarryoverSummary } from "@/pages/NewCarryoverSummary";
+import { RawSummary } from "@/pages/RawSummary";
 
 function ProtectedRoutes() {
   const { session, profile, loading } = useAuth();
@@ -30,6 +32,8 @@ function ProtectedRoutes() {
         <Route path="/requests" element={<Requests />} />
         <Route path="/requests/:id" element={<EntryDetail />} />
         {profile.role === "pd_staff" && <Route path="/new-entry" element={<NewEntry />} />}
+        {profile.role !== "pd_staff" && <Route path="/summary" element={<NewCarryoverSummary />} />}
+        {profile.role !== "pd_staff" && <Route path="/summary/raw" element={<RawSummary />} />}
         {profile.role === "developer" && <Route path="/account-management" element={<AccountManagement />} />}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

@@ -1,15 +1,19 @@
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, ListChecks, FilePlus2, LogOut, Building2, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, ListChecks, FilePlus2, LogOut, Building2, ShieldCheck, FileBarChart, Database } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 
 export function AppSidebar() {
   const { profile, signOut } = useAuth();
 
+  const canSeeSummaries = profile?.role === "pd_manager" || profile?.role === "finance_manager" || profile?.role === "developer";
+
   const navItems = [
     { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true },
     { to: "/requests", label: "Requests", icon: ListChecks },
     ...(profile?.role === "pd_staff" ? [{ to: "/new-entry", label: "New Entry", icon: FilePlus2 }] : []),
+    ...(canSeeSummaries ? [{ to: "/summary", label: "CAPEX Summary", icon: FileBarChart }] : []),
+    ...(canSeeSummaries ? [{ to: "/summary/raw", label: "Raw Summary", icon: Database }] : []),
     ...(profile?.role === "developer" ? [{ to: "/account-management", label: "Account Management", icon: ShieldCheck }] : []),
   ];
 
