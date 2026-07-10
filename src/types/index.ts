@@ -76,6 +76,17 @@ export interface NotificationLog {
   created_at: string;
 }
 
+export type RuleType = "block" | "allow";
+
+export interface EmailAccessRule {
+  id: string;
+  pattern: string;
+  rule_type: RuleType;
+  note: string | null;
+  created_by: string | null;
+  created_at: string;
+}
+
 /** New entry payload — everything the PD Staff form actually submits. */
 export type NewCapexEntryInput = Omit<
   CapexEntry,
