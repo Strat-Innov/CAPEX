@@ -75,7 +75,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         data: fullName ? { full_name: fullName } : undefined,
       },
     });
-    return { error: error?.message ?? null };
+    if (error) console.error("signInWithMagicLink raw error:", error);
+    return { error: error?.message || (error ? "Sign-in failed. Check the console for details." : null) };
   }
 
   async function signOut() {
